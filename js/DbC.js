@@ -1,5 +1,65 @@
-dbc = {};
+quality = function(options){
+	
+	
+		var require 
+		= function(precondition)
+		{
+     		var toReturn = precondition;
     
+     		toReturn.func = dbc.func;
+    
+     		return toReturn;  
+		};
+
+		var body
+		= function(delegate)
+		{
+     		var prior = this;
+	 
+		    var  toReturn =
+	  		function()
+     		{
+          		prior.apply(this,arguments);
+          		return delegate.apply(this,arguments);
+     		}; 
+    
+     		toReturn.ensure = dbc.ensure;
+    
+     		return toReturn;
+		};
+		
+		var ensure
+		= function(postcondition)
+		{
+     		var prior = this;
+    
+     		var  toReturn =
+	 		function()
+     		{
+				var toReturn = prior.apply(this,arguments); 
+     			postcondition(toReturn);
+				return toReturn;
+     		}; 
+    
+     		return toReturn;
+		};
+	
+		var myConstructor
+		= function(){
+			return {
+				require: require,
+				func: body,
+				ensure: ensure		
+			};
+		};
+	
+		return myConstructor;
+}();
+
+//dbc = {};
+dbc = quality();
+    
+/*
 dbc.require
 = function(tests)
 {
@@ -20,9 +80,6 @@ dbc.func
      {
           prior.apply(this,arguments);
           return delegate.apply(this,arguments);
-		  //Following DOES NOT WORK
-		  //prior(arguments);
-		  //return delegate(arguments);
      }; 
     
      toReturn.ensure = dbc.ensure;
@@ -41,14 +98,10 @@ dbc.ensure
 			var toReturn = prior.apply(this,arguments); 
      		tests(toReturn);
 			return toReturn;
-			//Following DOES NOT WORK
-			//var toReturn = prior(arguments); 
-     		//tests(toReturn);
-			//return toReturn;
      }; 
     
      return toReturn;
-};
+};*/
 
 var Test = {FName: 'Brandon', LName: 'Wilhite'};
  
