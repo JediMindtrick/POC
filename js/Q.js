@@ -16,47 +16,71 @@
  * @param {Object} options
  */
 Q = function(){
-	//object to hold code related to Q methods
+	/*
+	 * object to hold code related to Q methods 
+	 * require() is called first, then on success body() is called, then result is handed to ensure()  
+	 */
 	var QualityMethod =
 	{
-//		method : function(){}, 
-		require : function(precondition){
-     		var toReturn = precondition;
+		/* 
+		 * Function to create a require function, pass in (obj,prop) in order to be able to assign the results
+		 * to a particular object property. 
+		 */
+		makeRequire : function(obj,prop){
+			return	function(precondition){
+     			var toReturn = precondition;
     
-     		toReturn.body = QualityMethod.body;
+     			toReturn.body = QualityMethod.makeBody(obj,prop);
    
-//   			this.method = toReturn;
-     		return toReturn;  
-		},
-		body : function(delegate){
-     		var prior = this;
+   				//the reason this is needed:
+				/*
+				 * This allows the chaining of calls like so: Q(someObj,'someMethod').require().body().ensure();
+				 * without the need to assign the result.  
+				 * Otherwise the call would have to be like this: 
+				 * someObj.someMethod = Q.require().body().ensure();
+				 */
+     			obj[prop] = toReturn;
+				return obj[prop];  
+			};
+		} ,
+		/* 
+		 * Function to create a body function, pass in (obj,prop) in order to be able to assign the results
+		 * to a particular object property. 
+		 */
+		makeBody : function(obj,prop){
+			return function(delegate){
+     			var prior = this;
 	 
-			var  toReturn =
-	  		function()
-     		{
-          		prior.apply(this,arguments);
-          		return delegate.apply(this,arguments);
-     		}; 
+				var  toReturn =
+	  			function(){
+          			prior.apply(this,arguments);
+          			return delegate.apply(this,arguments);
+     			}; 
     
-     		toReturn.ensure = QualityMethod.ensure;
+     			toReturn.ensure = QualityMethod.makeEnsure(obj,prop);
     
-//			this.method = toReturn;
-     		return toReturn;
-		},
-		ensure : function(postcondition){
-     		var prior = this;
+     			obj[prop] = toReturn;
+				
+				return obj[prop];
+			};
+		} ,
+		makeEnsure : function(obj,prop){
+			//basic ensure function
+			return function(postcondition){
+     			var prior = this;
     
-     		var  toReturn =
-	 		function()
-     		{
-				var toReturn = prior.apply(this,arguments); 
-     			postcondition(toReturn);
-				return toReturn;
-     		}; 
-    
-//			this.method = toReturn;
-			return toReturn;
-		}  
+     			var  toReturn =
+	 			function(){
+					var toReturn = prior.apply(this,arguments); 
+     				postcondition(toReturn);
+					return toReturn;
+     			}; 
+    			//assign results
+				obj[prop] = toReturn;
+				
+				return obj[prop];
+			};	
+		} 
 	};
 	var registeredMethods = [];
 	var registerFunc = function(obj,prop){	
@@ -80,9 +104,9 @@ Q = function(){
 			
 		//decorate the function
 		//toDecorate.method = QualityMethod.method;
-		toDecorate.require = QualityMethod.require;
-		toDecorate.body = QualityMethod.body;
-		toDecorate.ensure = QualityMethod.ensure;
+		toDecorate.require = QualityMethod.makeRequire(obj,prop);
+		toDecorate.body = QualityMethod.makeBody(obj,prop);
+		toDecorate.ensure = QualityMethod.makeEnsure(obj,prop);
 		
 		//assign the function
 		obj[prop] = toDecorate;
@@ -104,8 +128,6 @@ Q = function(){
 	};
 }();
 
-//test commit
-
 var Test = {FName: 'Brandon', LName: 'Wilhite'};
 
 Q(Test,'myFunction')
@@ -123,23 +145,6 @@ Q(Test,'myFunction')
 	 }
 });
  
-/*
-Test.myFunction
-= Q.require(function(someInt){
-     if (someInt < 1) {
-	 	throw 'error on require!';
-	 }
-})
-.body(function(someInt){
-          return (someInt*someInt);
-})
-.ensure(function(someReturn){
-     if (someReturn > 12) {
-	 	throw 'error on ensure!';
-	 }
-});
-*/
-
 var failRequire
 = function()
 {
