@@ -1,18 +1,16 @@
 //test commit
-quality = function(options){
-	
-	
-		var require 
+q = function(options){
+		var myRequire 
 		= function(precondition)
 		{
      		var toReturn = precondition;
     
-     		toReturn.func = dbc.func;
+     		toReturn.body = myBody;
     
      		return toReturn;  
 		};
 
-		var body
+		var myBody
 		= function(delegate)
 		{
      		var prior = this;
@@ -24,12 +22,12 @@ quality = function(options){
           		return delegate.apply(this,arguments);
      		}; 
     
-     		toReturn.ensure = dbc.ensure;
+     		toReturn.ensure = myEnsure;
     
      		return toReturn;
 		};
 		
-		var ensure
+		var myEnsure
 		= function(postcondition)
 		{
      		var prior = this;
@@ -48,29 +46,29 @@ quality = function(options){
 		var myConstructor
 		= function(){
 			return {
-				require: require,
-				func: body,
-				ensure: ensure		
+				require: myRequire,
+				body: myBody,
+				ensure: myEnsure		
 			};
 		};
 	
 		return myConstructor;
-}();
+}()();
 
-dbc = quality();
+//q = dbc();
     
 
 var Test = {FName: 'Brandon', LName: 'Wilhite'};
  
 Test.myFunction
-= dbc.require(function(someInt){
+= q.require(function(someInt){
      if (someInt < 1) {
 	 	throw 'error on require!';
 	 }
 })
  
  
-.func(function(someInt){
+.body(function(someInt){
           return (someInt*someInt);
 })
  
