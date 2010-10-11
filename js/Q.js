@@ -1,17 +1,13 @@
 /*
  * BASIC FUNCTIONS
  * Q(object obj,string prop)
- * 		adds a quality method to the passed object
+ * 		adds a quality method to the passed object, also registers it
  * 		quality methods currently contain 'require', 'body', and 'ensure' methods attached
- * 		--add private 'register' method
- * Q.require(bool someTest, string someErrorMsg);
- * Q.ensure(bool someTest, string someErrorMsg);
+ * Q.check(bool someTest, string someErrorMsg);
  * 
  * ADVANCED FUNCTIONS
  * Q.report()
  * 		returns a list of report objects for all registered quality methods 
- * 
- * 
  * 
  * @param {Object} options
  */
@@ -82,9 +78,9 @@ Q = function(){
 			};	
 		} 
 	};
-	var registeredMethods = [];
-	var registerFunc = function(obj,prop){	
-		registeredMethods.push(prop);
+	var RegisteredMethods = [];
+	var registerFunc = function(obj,prop){
+		RegisteredMethods[obj] = {func : prop};
 	};
 	var registerObj = function(obj){
 	};
@@ -94,16 +90,12 @@ Q = function(){
 	};
 	var myFuncConstructor = function(obj,prop){
 		//function that will be decorated
-		var toDecorate = null;
-		if (obj[prop] === undefined) {
-			toDecorate = function(){};
-		}
-		else {
+		var toDecorate = function(){};
+		if (obj[prop] !== undefined) {
 			toDecorate = obj[prop];
 		}
 			
 		//decorate the function
-		//toDecorate.method = QualityMethod.method;
 		toDecorate.require = QualityMethod.makeRequire(obj,prop);
 		toDecorate.body = QualityMethod.makeBody(obj,prop);
 		toDecorate.ensure = QualityMethod.makeEnsure(obj,prop);
@@ -127,54 +119,3 @@ Q = function(){
 		}
 	};
 }();
-
-var Test = {FName: 'Brandon', LName: 'Wilhite'};
-
-Q(Test,'myFunction')
-.require(function(someInt){
-     if (someInt < 1) {
-	 	throw 'error on require!';
-	 }
-})
-.body(function(someInt){
-          return (someInt*someInt);
-})
-.ensure(function(someReturn){
-     if (someReturn > 12) {
-	 	throw 'error on ensure!';
-	 }
-});
- 
-var failRequire
-= function()
-{
-	try {
-		alert(Test.myFunction(-1));
-	}
-	catch(e)
-	{
-		alert('exception caught: ' + e.toString());
-	}
-};
-var failEnsure
-= function()
-{
-	try {
-		alert(Test.myFunction(4));
-	}
-	catch(e)
-	{
-		alert('exception caught: ' + e.toString());
-	}
-};
-var success
-= function()
-{
-	try {
-		alert(Test.myFunction(2));
-	}
-	catch(e)
-	{
-		alert('exception caught: ' + e.toString());
-	}
-};

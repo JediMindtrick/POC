@@ -3,7 +3,53 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script type="text/javascript" src="js/q.js"></script>
+		<script type="text/javascript" src="js/Q.js"></script>
+		<script type="text/javascript">
+			var Test = {FName: 'Brandon', LName: 'Wilhite'};
+
+			Q(Test,'myFunction')
+				.require(function(someInt){
+     				if (someInt < 1) {
+	 					throw 'error on require!';
+	 				}
+				})
+				.body(function(someInt){
+          			return (someInt*someInt);
+				})
+				.ensure(function(someReturn){
+     				if (someReturn > 12) {
+	 					throw 'error on ensure!';
+	 				}
+				});
+ 
+			var failRequire
+			= function(){
+				try {
+					alert(Test.myFunction(-1));
+				}
+				catch(e){
+					alert('exception caught: ' + e.toString());
+				}
+			};
+			var failEnsure
+			= function(){
+				try {
+					alert(Test.myFunction(4));
+				}
+				catch(e){
+					alert('exception caught: ' + e.toString());
+				}
+			};
+			var success
+			= function(){
+				try {
+					alert(Test.myFunction(2));
+				}
+				catch(e){
+					alert('exception caught: ' + e.toString());
+				}
+			};
+		</script>
         <title>New Web Project</title>
     </head>
     <body>
