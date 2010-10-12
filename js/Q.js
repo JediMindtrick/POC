@@ -119,3 +119,11 @@ Q = function(){
 		}
 	};
 }();
+
+/*//DOESN'T WORK
+Q.check = 
+function(someTest,someMsg){
+	if(someTest === false){
+		throw someMsg;
+	}
+};*/
