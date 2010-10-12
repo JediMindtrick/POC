@@ -24,9 +24,9 @@ Q = function(){
 		 */
 		makeRequire : function(obj,prop){
 			return	function(precondition){
-     			var toReturn = precondition;
+     			var created = precondition;
     
-     			toReturn.body = QualityMethod.makeBody(obj,prop);
+     			created.body = QualityMethod.makeBody(obj,prop);
    
    				//the reason this is needed:
 				/*
@@ -35,48 +35,46 @@ Q = function(){
 				 * Otherwise the call would have to be like this: 
 				 * someObj.someMethod = Q.require().body().ensure();
 				 */
-     			obj[prop] = toReturn;
+     			obj[prop] = created;
 				return obj[prop];  
-			};
-		} ,
+			};//end of created function
+		} ,//end makeRequire()
 		/* 
 		 * Function to create a body function, pass in (obj,prop) in order to be able to assign the results
 		 * to a particular object property. 
 		 */
 		makeBody : function(obj,prop){
 			return function(delegate){
+				
      			var prior = this;
 	 
-				var  toReturn =
-	  			function(){
+				var  created = function(){
           			prior.apply(this,arguments);
           			return delegate.apply(this,arguments);
      			}; 
     
-     			toReturn.ensure = QualityMethod.makeEnsure(obj,prop);
+     			created.ensure = QualityMethod.makeEnsure(obj,prop);
     
-     			obj[prop] = toReturn;
-				
+     			obj[prop] = created;
 				return obj[prop];
-			};
-		} ,
+			};//end of created function
+		} ,//end of makeBody()
 		makeEnsure : function(obj,prop){
 			//basic ensure function
 			return function(postcondition){
      			var prior = this;
     
-     			var  toReturn =
-	 			function(){
-					var toReturn = prior.apply(this,arguments); 
-     				postcondition(toReturn);
-					return toReturn;
+     			var  created = function(){
+					var created = prior.apply(this,arguments); 
+     				postcondition(created);
+					return created;
      			}; 
-    			//assign results
-				obj[prop] = toReturn;
 				
+    			//assign results
+				obj[prop] = created;
 				return obj[prop];
-			};	
-		} 
+			};	//end of created function
+		} //end makeEnsure()
 	};
 	var RegisteredMethods = [];
 	var registerFunc = function(obj,prop){
@@ -119,11 +117,3 @@ Q = function(){
 		}
 	};
 }();
-
-/*//DOESN'T WORK
-Q.check = 
-function(someTest,someMsg){
-	if(someTest === false){
-		throw someMsg;
-	}
-};*/
