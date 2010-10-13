@@ -10,9 +10,11 @@
 
 			Q(Test,'myFunction')
 				.require(function(someInt){
+					Q.check(someInt >= 1, 'error on require!');
+					/*
      				if (someInt < 1) {
 	 					throw 'error on require!';
-	 				}
+	 				}*/
 				})
 				.body(function(someInt){
           			return (someInt*someInt);
