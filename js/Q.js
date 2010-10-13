@@ -117,3 +117,8 @@ Q = function(){
 		}
 	};
 }();
+Q.check = function(someTest,msg)
+{
+	if(!someTest)
+		throw msg;
+}
