@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<a href='index.html' style="margin-left:30px;">Index</a> <br />
+<button onclick="func1();" style="margin-left:30px;">func1!</button>
+<button onclick="func2();" style="margin-left:30px;">func2!</button>
+<button onclick="func3(func2);">func3 passing!</button>
+<button onclick="func3();">func3 failing!</button>
+<div id="output"></div>
+</body>
+<script type="text/javascript" src="js/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="js/WrapFunction.js"></script>
+<script type="text/javascript">
+	var displayWindowObjects =
+	function(){
+		var arrayString = '[';
+		
+		for(var k in window)
+		{
+			arrayString += "'" + k + "',";		
+		}
+		arrayString = arrayString.slice(0,arrayString.length - 2);	
+		arrayString += ']';
+		$('#output').html(arrayString);
+	}
+	
+	var func1 = function(){ alert("Func1!") };
+	
+	var func2 = function(){alert("Func2!");};
+	var func3 = function(s){alert("Func3! "); s();};
+</script>
+<script type="text/javascript">
+	//displayWindowObjects();
+	interceptAll(window,getCatchAroundAdvice);
+</script>
+
+</html>
